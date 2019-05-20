@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        console = (TextView) findViewById(R.id.console);
+        console = findViewById(R.id.console);
         console.setMovementMethod(new ScrollingMovementMethod());
 
         startService(new Intent(this, BridgeService.class));

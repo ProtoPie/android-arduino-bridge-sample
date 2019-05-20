@@ -124,19 +124,19 @@ public class BridgeService extends Service {
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Broadcast received: " + intent.getAction());
 
-            if (intent.getAction().equals(ACTION_USB_PERMISSION)) {
-                boolean granted = intent.getExtras().getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED);
+            if (ACTION_USB_PERMISSION.equals(intent.getAction())) {
+                boolean granted = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false);
                 Log.i(TAG, "USB permission: " + granted);
 
                 if (granted) {
                     communicate();
                 }
-            } else if (intent.getAction().equals(ProtoPieUtils.PROTOPIE_RECEIVE_ACTION)) {
+            } else if (ProtoPieUtils.PROTOPIE_RECEIVE_ACTION.equals(intent.getAction())) {
                 String messageId = intent.getStringExtra("messageId");
                 Log.i(TAG, "Received a message from ProtoPie: " + messageId);
                 MainActivity.sendToConsole(BridgeService.this, "Message from ProtoPie: " + messageId);
                 sendToUsb(messageId.getBytes());
-            } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+            } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
                 MainActivity.sendToConsole(BridgeService.this, "USB device attached");
                 checkPermission();
             } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
