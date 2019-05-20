@@ -10,6 +10,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -46,18 +47,14 @@ public class BridgeService extends Service {
         registerReceiver(broadcastReceiver, filter);
     }
 
-    private void checkPermission() {
-        for (final UsbDevice device : usbManager.getDeviceList().values()) {
-            Log.i(TAG, "Found USB device: " + device.getDeviceName());
-
-            currentDevice = device;
-            if (usbManager.hasPermission(device)) {
-                communicate();
-            } else {
-                Log.i(TAG, "Requesting permission");
-                PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-                usbManager.requestPermission(device, pi);
-            }
+    private void checkPermission(UsbDevice device) {
+        currentDevice = device;
+        if (usbManager.hasPermission(device)) {
+            communicate();
+        } else {
+            Log.i(TAG, "Requesting permission");
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            usbManager.requestPermission(device, pi);
         }
     }
 
@@ -138,8 +135,12 @@ public class BridgeService extends Service {
                 sendToUsb(messageId.getBytes());
             } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
                 MainActivity.sendToConsole(BridgeService.this, "USB device attached");
-                checkPermission();
-            } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+
+                Parcelable device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                if (device instanceof UsbDevice) {
+                    checkPermission((UsbDevice) device);
+                }
+            } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())) {
                 MainActivity.sendToConsole(BridgeService.this, "USB device detached");
                 disconnect();
             }
