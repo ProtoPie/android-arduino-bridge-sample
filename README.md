@@ -1,3 +1,5 @@
+# DEPRECATED, No more mainterance for this repo. Please visit [protopie-connect-bridge-apps](https://github.com/ProtoPie/protopie-connect-bridge-apps) to reference other samples
+
 # Introduction
 
 Sample Android app that relays messages between ProtoPie and Arduino.
